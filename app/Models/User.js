@@ -5,7 +5,7 @@ class User {
         this.email = email;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.password = password;
+        // this.password = password;
     }
 
 }
