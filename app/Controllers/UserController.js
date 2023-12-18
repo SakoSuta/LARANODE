@@ -1,9 +1,16 @@
 const UserRepository = require('../repositories/UserRepository'); //TODO: Remplacer par le chemin vers votre repository
+const UserValidator = require('../validators/UserValidator'); //TODO: Remplacer par le chemin vers votre validator
 
 class UserController {
     async createUser(req, res) {
         try {
             const { name, email } = req.body;
+
+            let validateErrors = UserValidator.validateUserData(req.body);
+            if (validateErrors.length > 0) {
+                return res.status(422).json({ errors: validateErrors });
+            }
+
             const newUser = await UserRepository.createUser({
                 name,
                 email,
@@ -37,6 +44,11 @@ class UserController {
         try {
             const userId = req.params.id;
             const updateData = req.body;
+
+            let validateErrors = UserValidator.validateUserData(updateData);
+            if (validateErrors.length > 0) {
+                return res.status(422).json({ errors: validateErrors });
+            }
 
             let user = await UserRepository.getUserById(userId);
             if (!user) {
