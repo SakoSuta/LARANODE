@@ -1,5 +1,5 @@
-const UserRepository = require('../repositories/UserRepository'); //TODO: Remplacer par le chemin vers votre repository
-const UserValidator = require('../validators/UserValidator'); //TODO: Remplacer par le chemin vers votre validator
+const UserRepository = require('../Repository/UserRepository');
+const UserValidator = require('../Validator/UserValidator');
 
 class UserController {
     async createUser(req, res) {

@@ -1,4 +1,4 @@
-const pool = require('../path/to/your/database/connection'); //TODO: Remplacer par la connexion à votre base de données
+const pool = require('../../bootstrap/Db');
 
 class UserRepository {
     async createUser(userData) {
