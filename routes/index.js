@@ -1,4 +1,4 @@
-import UserController from "../Controllers/UserController";
+import UserController from "../app/Controllers/UserController";
 
 const Routes = (req, res) => {
     const userController = new UserController(req, res);
