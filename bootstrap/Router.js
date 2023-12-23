@@ -1,4 +1,4 @@
-import Routes from "../routes/index";
+const Routes = require('../routes/index');
 
 class Router {
   constructor(server) {
