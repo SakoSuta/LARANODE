@@ -6,5 +6,5 @@ new Router(server);
 
 const port = process.env.PORT || 2000;
 server.listen(port, () => {
-  console.log(`Server running at port:${port}`);
+  console.log(`Server running on port : ${port}`);
 });
