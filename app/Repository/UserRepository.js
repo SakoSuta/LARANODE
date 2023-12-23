@@ -8,6 +8,12 @@ class UserRepository {
         return result.rows[0];
     }
 
+    async getAllUser() {
+        const query = 'SELECT * FROM users';
+        const result = await pool.query(query);
+        return result.rows;
+    }
+
     async getUserById(userId) {
         const query = 'SELECT * FROM users WHERE id = $1';
         const values = [userId];

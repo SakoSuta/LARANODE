@@ -39,6 +39,15 @@ class UserController {
         }
     }
     
+    async getAllUser(req, res) {
+        try {
+            const users = await UserRepository.getAllUser();
+            return res.status(200).json(users);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Error recovering users' });
+        }
+    }
 
     async updateUser(req, res) {
         try {

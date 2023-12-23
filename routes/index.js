@@ -8,7 +8,7 @@ const Routes = (req, res) => {
         const isUserSpecificUrl = req.url.match(/\/users\/\w+/);
 
         if (isUserRootUrl && req.method === "GET") {
-            // TODO: Implement get all users
+            userController.getAllUser();
         } else if (isUserSpecificUrl && req.method === "GET") {
             userController.getUser();
         } else if (isUserRootUrl && req.method === "POST") {
