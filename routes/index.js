@@ -27,4 +27,4 @@ const Routes = (req, res) => {
     }
 };
 
-export default Routes;
+module.exports = Routes;
