@@ -39,6 +39,7 @@ class UserRepository {
     
         set.push(`updated_at = $${paramIndex}`);
         values.push(new Date());
+        paramIndex++;
     
         if (set.length === 0) {
             throw new Error("No data provided to update");
