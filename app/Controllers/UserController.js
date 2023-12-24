@@ -129,6 +129,7 @@ class UserController {
             await this.userRepository.deleteUser(userId);
     
             this.res.writeHead(204, { "Content-Type": "application/json" });
+            this.res.write(JSON.stringify({ message: 'User deleted' }));
             this.res.end();
         } catch (error) {
             console.error(error);
