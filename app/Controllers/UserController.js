@@ -2,94 +2,139 @@ const UserRepository = require('../Repository/UserRepository');
 const UserValidator = require('../Validator/UserValidator');
 
 class UserController {
-    async createUser(req, res) {
-        try {
-            const { name, email } = req.body;
 
-            let validateErrors = UserValidator.validateUserData(req.body);
+    constructor(req, res) {
+        this.req = req;
+        this.res = res;
+        this.userRepository = new UserRepository();
+    }
+
+    async parseRequestBody(req) {
+        return new Promise((resolve, reject) => {
+            let body = '';
+            req.on('data', chunk => {
+                body += chunk.toString();
+            });
+            req.on('end', () => {
+                try {
+                    resolve(JSON.parse(body));
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        });
+    }
+
+    async createUser() {
+        try {
+            const { name, email } = await this.parseRequestBody(this.req);
+
+            let validateErrors = UserValidator.validateUserData({ name, email });
             if (validateErrors.length > 0) {
-                return res.status(422).json({ errors: validateErrors });
+                this.res.writeHead(422, { "Content-Type": "application/json" });
+                this.res.write(JSON.stringify({ errors: validateErrors }));
+                this.res.end();
             }
 
-            const newUser = await UserRepository.createUser({
-                name,
-                email,
-            });
-
-            return res.status(201).json(newUser);
+            const newUser = await this.userRepository.createUser({ name, email });
+            this.res.writeHead(201, { "Content-Type": "application/json" });
+            this.res.write(JSON.stringify(newUser));
+            this.res.end();
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: 'Error creating user' });
+            this.res.writeHead(500, { "Content-Type": "application/json" });
+            this.res.write(JSON.stringify({ error: 'Error creating user' }));
+            this.res.end();
         }
     }
 
-    async getUser(req, res) {
+    async getUser() {
         try {
-            const userId = req.params.id;
-            const user = await UserRepository.getUserById(userId);
+            const userId = this.req.url.split("/")[2];
+            const user = await this.userRepository.getUserById(userId);
     
             if (!user) {
-                return res.status(404).json({ message: 'User not found' });
+                this.res.writeHead(404, { "Content-Type": "application/json" });
+                this.res.write(JSON.stringify({ message: 'User not found' }));
+                this.res.end();
             }
-    
-            return res.status(200).json(user);
+            this.res.writeHead(200, { "Content-Type": "application/json" });
+            this.res.write(JSON.stringify(user));
+            this.res.end();
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: 'Error recovering user' });
+            this.res.writeHead(500, { "Content-Type": "application/json" });
+            this.res.write(JSON.stringify({ error: 'Error recovering user' }));
+            this.res.end();
         }
     }
     
-    async getAllUser(req, res) {
+    async getAllUser() {
         try {
-            const users = await UserRepository.getAllUser();
-            return res.status(200).json(users);
+            const users = await this.userRepository.getAllUser();
+            this.res.writeHead(200, { "Content-Type": "application/json" });
+            this.res.write(JSON.stringify(users));
+            this.res.end();
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: 'Error recovering users' });
+            this.res.writeHead(500, { "Content-Type": "application/json" });
+            this.res.write(JSON.stringify({ error: 'Error recovering users' }));
+            this.res.end();
         }
     }
 
-    async updateUser(req, res) {
+    async updateUser() {
         try {
-            const userId = req.params.id;
-            const updateData = req.body;
+            const userId = this.req.url.split("/")[2];
+            const updateData = await this.parseRequestBody(this.req);
 
             let validateErrors = UserValidator.validateUserData(updateData);
             if (validateErrors.length > 0) {
-                return res.status(422).json({ errors: validateErrors });
+                this.res.writeHead(422, { "Content-Type": "application/json" });
+                this.res.write(JSON.stringify(validateErrors));
+                this.res.end()
             }
 
-            let user = await UserRepository.getUserById(userId);
+            let user = await this.userRepository.getUserById(userId);
             if (!user) {
-                return res.status(404).json({ message: 'User not found' });
+                this.res.writeHead(404, { "Content-Type": "application/json" });
+                this.res.write(JSON.stringify({ message: 'User not found' }));
+                this.res.end();
             }
             
-            await UserRepository.updateUser(userId, updateData);
+            await this.userRepository.updateUser(userId, updateData);
             
-            user = await UserRepository.getUserById(userId);
-            
-            return res.status(200).json(user);
+            this.res.writeHead(200, { "Content-Type": "application/json" });
+            this.res.write(JSON.stringify(user));
+            this.res.end();
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: 'Error updating user' });
+            this.res.writeHead(500, { "Content-Type": "application/json" });
+            this.res.write(JSON.stringify({ error: 'Error updating user' }));
+            this.res.end();
         }
     }
 
-    async deleteUser(req, res) {
+    async deleteUser() {
         try {
-            const userId = req.params.id;
+            const userId = this.req.url.split("/")[2];
 
-            let user = await UserRepository.getUserById(userId);
+            let user = await this.userRepository.getUserById(userId);
             if (!user) {
-                return res.status(404).json({ message: 'User not found' });
+                this.res.writeHead(404, { "Content-Type": "application/json" });
+                this.res.write(JSON.stringify({ message: 'User not found' }));
+                this.res.end();
             }
 
-            await UserRepository.deleteUser(userId);
+            await this.userRepository.deleteUser(userId);
     
-            return res.status(204).send();
+            this.res.writeHead(204, { "Content-Type": "application/json" });
+            this.res.end();
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: 'Error deleting user' });
+            this.res.writeHead(500, { "Content-Type": "application/json" });
+            this.res.write(JSON.stringify({ error: 'Error deleting user' }));
+            this.res.end();
         }
     }
     
